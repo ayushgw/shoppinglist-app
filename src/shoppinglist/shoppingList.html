@@ -12,6 +12,7 @@
 
 <!-- Display List -->
 <span ng-if="!list.list.items.length">No item(s) in the list</span>
+
 <ul>
   <li ng-repeat="item in list.list.items track by $index">
     <span>Buy {{item.name}} &dash; {{item.quantity}}</span>

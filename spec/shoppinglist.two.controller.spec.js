@@ -1,58 +1,38 @@
-describe("Player", function() {
-  var player;
-  var song;
+describe("ShoppingListTwoController", function() {
 
-  beforeEach(function() {
-    player = new Player();
-    song = new Song();
-  });
+  beforeEach(module('ShoppingListApp'));
 
-  it("should be able to play a Song", function() {
-    player.play(song);
-    expect(player.currentlyPlayingSong).toEqual(song);
+  var $controller;
+  var shoppingListTwoController;
 
-    //demonstrates use of custom matcher
-    expect(player).toBePlaying(song);
-  });
+  beforeEach(inject(function (_$controller_, $q){
+    $controller = _$controller_;
+    var deferred = $q.defer();
 
-  describe("when song has been paused", function() {
-    beforeEach(function() {
-      player.play(song);
-      player.pause();
+    var ShoppingListFactoryErrorMock = function() {
+      var mockService = {};
+
+      mockService.getItems = function() {
+        return null;
+      };
+      mockService.addItem = function(mockItem) {
+        deferred.reject('mock error message');
+
+        return deferred.promise;
+      };
+
+      return mockService;
+    };
+
+    shoppingListTwoController = $controller('ShoppingListTwoController', {
+      ShoppingListFactory: ShoppingListFactoryErrorMock
     });
 
-    it("should indicate that the song is currently paused", function() {
-      expect(player.isPlaying).toBeFalsy();
+  }));
 
-      // demonstrates use of 'not' with a custom matcher
-      expect(player).not.toBePlaying(song);
-    });
-
-    it("should be possible to resume", function() {
-      player.resume();
-      expect(player.isPlaying).toBeTruthy();
-      expect(player.currentlyPlayingSong).toEqual(song);
-    });
+  it("should log an error message in the console", function() {
+    shoppingListTwoController.addItem();
+    expect(shoppingListTwoController.errorTest).toBe("mock error message");
   });
 
-  // demonstrates use of spies to intercept and test method calls
-  it("tells the current song if the user has made it a favorite", function() {
-    spyOn(song, 'persistFavoriteStatus');
-
-    player.play(song);
-    player.makeFavorite();
-
-    expect(song.persistFavoriteStatus).toHaveBeenCalledWith(true);
-  });
-
-  //demonstrates use of expected exceptions
-  describe("#resume", function() {
-    it("should throw an exception if song is already playing", function() {
-      player.play(song);
-
-      expect(function() {
-        player.resume();
-      }).toThrowError("song is already playing");
-    });
-  });
 });

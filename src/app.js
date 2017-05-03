@@ -2,7 +2,7 @@
   'use strict';
   //to prevent mistakes like defining variables on global scope, eg. x=20 without using var
 
-  angular.module("ShoppingListApp", [])
+  angular.module("ShoppingListApp", ['Spinner'])
   .controller("ShoppingListOneController", ShoppingListOneController)
   .controller("ShoppingListTwoController", ShoppingListTwoController)
   .factory("ShoppingListFactory", ShoppingListFactory)
@@ -28,7 +28,6 @@
   function ShoppingListDirectiveController() {
     var list = this;
 
-
   }
 
   ShoppingListOneController.$inject = ['ShoppingListFactory'];
@@ -43,7 +42,16 @@
     list1.item = { itemName: '', itemQuantity: null };
 
     list1.addItem = function() {
-      shoppingList.addItem(list1.item);
+      list1.showSpinner = true;
+      shoppingList.addItem(list1.item)
+      .then(function(success){
+        console.log(success);
+        list1.showSpinner = false;
+      })
+      .catch(function(error){
+        console.log(error);
+        list1.showSpinner = false;
+      });
     };
 
     list1.removeItem = function(index) {
@@ -64,12 +72,15 @@
     list2.item = { itemName: '', itemQuantity: null };
 
     list2.addItem = function(){
+      list2.showSpinner = true;
       shoppingList.addItem(list2.item)
       .then(function(success){
         console.log(success);
+        list2.showSpinner = false;
       })
       .catch(function(error){
         console.log(error);
+        list2.showSpinner = false;
       });
     };
 
@@ -125,7 +136,7 @@
     };
   }
 
-  function ShoppingListService(maxItems, $q, HealthyFoodService) {
+  function ShoppingListService(maxItems, $q, HealthyFoodService, $rootScope) {
     var service = this;
 
     //Items Array
@@ -176,10 +187,10 @@
     };
   }
 
-  ShoppingListFactory.$inject = ['$q', 'HealthyFoodService'];
-  function ShoppingListFactory($q, HealthyFoodService) {
+  ShoppingListFactory.$inject = ['$q', 'HealthyFoodService', '$rootScope'];
+  function ShoppingListFactory($q, HealthyFoodService, $rootScope) {
     var factory = function(maxItems){
-      return new ShoppingListService(maxItems, $q, HealthyFoodService);
+      return new ShoppingListService(maxItems, $q, HealthyFoodService, $rootScope);
     };
 
     return factory;

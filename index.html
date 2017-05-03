@@ -5,14 +5,18 @@
 <head>
   <meta charset="utf-8">
 
-    <!-- Libraries -->
-    <script src="lib/angular.min.js" charset="utf-8"></script>
+  <!-- Libraries -->
+  <script src="lib/angular.min.js" charset="utf-8"></script>
 
-    <!-- Modules -->
-    <script src="src/app.js" charset="utf-8"></script>
+  <!-- Modules -->
+  <script src="src/app.js" charset="utf-8"></script>
+  <script src="src/spinner/spinner.module.js" charset="utf-8"></script>
+  <script src="src/spinner/spinner.component.js" charset="utf-8"></script>
+
   <!-- Styles -->
   <link rel="stylesheet" href="lib/bootstrap.min.css">
   <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="src/spinner/spinner.css">
 
   <title>Shopping List App</title>
 </head>
@@ -21,7 +25,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <span id="heading">
-        Coursera Course - AngularJS
+        Shopping List App
       </span>
     </div>
   </div>
@@ -52,11 +56,13 @@
       <!-- List 1 -->
       <div class="col-md-6" ng-controller="ShoppingListOneController as list1">
         <shopping-list my-list="list1" title="Shopping List 1"></shopping-list>
+        <spinner ng-if="list1.showSpinner"></spinner>
       </div>
 
       <!-- List 2 -->
       <div class="col-md-6" ng-controller="ShoppingListTwoController as list2">
         <shopping-list my-list="list2" title="Shopping List 2 (Max Items: {{list2.maxItems}})"></shopping-list>
+        <spinner ng-if="list2.showSpinner"></spinner>
       </div>
 
     </div>
