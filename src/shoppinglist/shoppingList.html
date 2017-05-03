@@ -1,0 +1,23 @@
+<h4>{{ list.title }}</h4><br>
+<label for="itemName">Name:</label>
+<input type="text" name="itemName" placeholder="Item Name" ng-model="list.list.item.itemName"> &nbsp;
+<label for="itemQuantity">Quantity:</label>
+<input type="number" name="itemQuantity" placeholder="Item Quantity" ng-model="list.list.item.itemQuantity">
+<button ng-click="list.list.addItem()">Add Item</button>
+
+<div class="total_items">
+  Total Items: {{list.list.items.length}}
+</div>
+<hr>
+
+<!-- Display List -->
+<span ng-if="!list.list.items.length">No item(s) in the list</span>
+<ul>
+  <li ng-repeat="item in list.list.items track by $index">
+    <span>Buy {{item.name}} &dash; {{item.quantity}}</span>
+    <button ng-click="list.list.removeItem($index)">Remove</button>
+  </li>
+</ul>
+<div class="error" ng-if="list.list.items['error']">
+  ERR: {{list.list.items['error']}}
+</div>

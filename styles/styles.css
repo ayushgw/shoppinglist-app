@@ -1,0 +1,27 @@
+#heading {
+  font-size: 25px;
+  margin: 30px;
+  color: #F7677B;
+}
+
+.error{
+  color: red;
+  font-size: 15px;
+}
+
+h4{
+  font-size: 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #6296BC;
+}
+
+.total_items {
+  margin-top: 20px;
+  color: #A5ABAF;
+}
+
+.suggestion_box{
+  background-color: #EDF1F2;
+  height: 130px;
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html ng-app="ShoppingListApp">
+<!-- ng-app binds this tag block to the app -->
+<head>
+  <meta charset="utf-8">
+
+    <!-- Libraries -->
+    <script src="lib/angular.min.js" charset="utf-8"></script>
+
+    <!-- Modules -->
+    <script src="src/app.js" charset="utf-8"></script>
+  <!-- Styles -->
+  <link rel="stylesheet" href="lib/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/styles.css">
+
+  <title>Shopping List App</title>
+</head>
+<body>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <span id="heading">
+        Coursera Course - AngularJS
+      </span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <h4><u>Note:</u></h4>
+        <ol>
+          <li>Both lists work independently &rightarrow; Using factory to create custom services</li>
+          <li>Items may take 3-4 secs to add &rightarrow; Working implementation of promises</li>
+          <li>Adding 'Maggi' is not allowed &rightarrow; Unhealthy</li>
+          <li>Maximum quantity allowed is 6 &rightarrow; Rest gets wasted</li>
+          <li>Both lists are being populated via same source &rightarrow; Using custom directive</li>
+        </ol>
+      </div>
+      <div class="col-md-4 suggestion_box">
+        <h4><u>Quick Add:</u></h4>
+        <ul>
+          <li>5 eggs <button>add to list 1</button><button>add to list 2</button></li>
+        </ul>
+        USE NODE + HEROKU TO ACCOMPLISH THIS
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- List 1 -->
+      <div class="col-md-6" ng-controller="ShoppingListOneController as list1">
+        <shopping-list my-list="list1" title="Shopping List 1"></shopping-list>
+      </div>
+
+      <!-- List 2 -->
+      <div class="col-md-6" ng-controller="ShoppingListTwoController as list2">
+        <shopping-list my-list="list2" title="Shopping List 2 (Max Items: {{list2.maxItems}})"></shopping-list>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 'ShoppinList' modules artifacts -->
+
+
+  <!-- 'Spinner' module artifacts -->
+
+
+</body>
+</html>
