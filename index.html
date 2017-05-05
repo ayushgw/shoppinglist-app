@@ -32,22 +32,46 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-7">
         <h4><u>Note:</u></h4>
         <ol>
           <li>Both lists work independently &rightarrow; Using factory to create custom services</li>
           <li>Items may take 3-4 secs to add &rightarrow; Working implementation of promises</li>
-          <li>Adding 'Maggi' is not allowed &rightarrow; Unhealthy</li>
-          <li>Maximum quantity allowed is 6 &rightarrow; Rest gets wasted</li>
+          <li>Adding 'Maggi' is not allowed &rightarrow; It is unhealthy (My service says so)</li>
+          <li>Maximum quantity allowed is 5 &rightarrow; To avoid wastage</li>
           <li>Both lists are being populated via same source &rightarrow; Using custom directive</li>
+          <li>Items can also be added in either list via 'Quick Add' on the right &rightarrow; Using $broadcast to do that</li>
+          <li>'Quick Add' items can be updated as required &rightarrow; No explaination. Really! Not everything has to be complicated</li>
         </ol>
       </div>
-      <div class="col-md-4 suggestion_box">
+      <div class="col-md-5 quickadd" ng-controller="QuickAddController as quickadd">
         <h4><u>Quick Add:</u></h4>
-        <ul>
-          <li>5 eggs <button>add to list 1</button><button>add to list 2</button></li>
-        </ul>
-        USE NODE + HEROKU TO ACCOMPLISH THIS
+
+        <div class="quickadd_main">
+          <ul>
+            <li ng-repeat="item in quickadd.listitems">
+              <div class="col-md-3">
+                {{item}}
+              </div>
+              <select ng-model="qty">
+                <option value="" selected="">Select Qty</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="3">4</option>
+                <option value="3">5</option>
+              </select>
+              <button ng-click="quickadd.addToListOne(item, qty)">Add to List 1</button>
+              <button ng-click="quickadd.addToListTwo(item, qty)">Add to List 2</button>
+            </li>
+          </ul>
+
+          <a class="quickadd_update_link">Update Items List</a>
+        </div>
+
+        <div class="quickadd_update" ng-hide="true">
+
+        </div>
       </div>
     </div>
 
@@ -67,13 +91,6 @@
 
     </div>
   </div>
-
-
-  <!-- 'ShoppinList' modules artifacts -->
-
-
-  <!-- 'Spinner' module artifacts -->
-
 
 </body>
 </html>

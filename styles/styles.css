@@ -21,7 +21,18 @@ h4{
   color: #A5ABAF;
 }
 
-.suggestion_box{
+.quickadd {
   background-color: #EDF1F2;
-  height: 130px;
+  margin-bottom: 20px;
+}
+
+.quickadd_update_link {
+  float: right;
+  margin: 10px;
+  font-size: 13px;
+  /*color: #A5ABAF;*/
+  text-transform: uppercase;
+}
+.quickadd_update_link:hover {
+  cursor: pointer;
 }

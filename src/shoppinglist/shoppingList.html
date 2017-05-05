@@ -3,7 +3,7 @@
 <input type="text" name="itemName" placeholder="Item Name" ng-model="list.list.item.itemName"> &nbsp;
 <label for="itemQuantity">Quantity:</label>
 <input type="number" name="itemQuantity" placeholder="Item Quantity" ng-model="list.list.item.itemQuantity">
-<button ng-click="list.list.addItem()">Add Item</button>
+<button ng-click="list.list.addItem(list.list.item)">Add Item</button>
 
 <div class="total_items">
   Total Items: {{list.list.items.length}}

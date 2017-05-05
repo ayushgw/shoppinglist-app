@@ -3,6 +3,7 @@
   //to prevent mistakes like defining variables on global scope, eg. x=20 without using var
 
   angular.module("ShoppingListApp", ['Spinner'])
+  .controller("QuickAddController", QuickAddController)
   .controller("ShoppingListOneController", ShoppingListOneController)
   .controller("ShoppingListTwoController", ShoppingListTwoController)
   .factory("ShoppingListFactory", ShoppingListFactory)
@@ -30,8 +31,30 @@
 
   }
 
-  ShoppingListOneController.$inject = ['ShoppingListFactory'];
-  function ShoppingListOneController(ShoppingListFactory){
+  QuickAddController.$inject = ['$rootScope'];
+  function QuickAddController($rootScope) {
+    var quickadd = this;
+
+    // TODO: USE SERVICE
+    quickadd.listitems = ['Chips', 'Cookies', 'Eggs', 'Bananas', 'Milk 500ml'];
+
+    quickadd.addToListOne = function(item, qty) {
+      $rootScope.$broadcast('quickadd_list1', {
+        itemName: item,
+        itemQuantity: qty
+      })
+    };
+
+    quickadd.addToListTwo = function(item, qty) {
+      $rootScope.$broadcast('quickadd_list2', {
+        itemName: item,
+        itemQuantity: qty
+      })
+    };
+  }
+
+  ShoppingListOneController.$inject = ['ShoppingListFactory', '$rootScope'];
+  function ShoppingListOneController(ShoppingListFactory, $rootScope){
     var list1 = this;
 
     //Use factory to create new shopping list
@@ -41,15 +64,16 @@
 
     list1.item = { itemName: '', itemQuantity: null };
 
-    list1.addItem = function() {
+    list1.addItem = function(item) {
+      console.log(item);
       list1.showSpinner = true;
-      shoppingList.addItem(list1.item)
+      shoppingList.addItem(item)
       .then(function(success){
-        console.log(success);
+        console.info(success);
         list1.showSpinner = false;
       })
       .catch(function(error){
-        console.log(error);
+        console.info(error);
         list1.showSpinner = false;
       });
     };
@@ -57,10 +81,14 @@
     list1.removeItem = function(index) {
       shoppingList.removeItem(index);
     };
+
+    $rootScope.$on('quickadd_list1', function(event, item) {
+      list1.addItem(item);
+    });
   }
 
-  ShoppingListTwoController.$inject = ['ShoppingListFactory'];
-  function ShoppingListTwoController(ShoppingListFactory) {
+  ShoppingListTwoController.$inject = ['ShoppingListFactory', '$rootScope'];
+  function ShoppingListTwoController(ShoppingListFactory, $rootScope) {
     var list2 = this;
 
     // Create a new shopping list
@@ -71,15 +99,17 @@
 
     list2.item = { itemName: '', itemQuantity: null };
 
-    list2.addItem = function(){
+    list2.addItem = function(item){
       list2.showSpinner = true;
-      shoppingList.addItem(list2.item)
+      shoppingList.addItem(item)
       .then(function(success){
-        console.log(success);
+        list2.successResp = success;
+        console.info(success);
         list2.showSpinner = false;
       })
       .catch(function(error){
-        console.log(error);
+        list2.errorResp = error;
+        console.info(error);
         list2.showSpinner = false;
       });
     };
@@ -88,6 +118,9 @@
       shoppingList.removeItem(index);
     };
 
+    $rootScope.$on('quickadd_list2', function(event, item) {
+      list2.addItem(item);
+    });
   }
 
   HealthyFoodService.$inject = ['$q', '$timeout'];
@@ -136,7 +169,7 @@
     };
   }
 
-  function ShoppingListService(maxItems, $q, HealthyFoodService, $rootScope) {
+  function ShoppingListService(maxItems, $q, HealthyFoodService) {
     var service = this;
 
     //Items Array
@@ -187,10 +220,10 @@
     };
   }
 
-  ShoppingListFactory.$inject = ['$q', 'HealthyFoodService', '$rootScope'];
-  function ShoppingListFactory($q, HealthyFoodService, $rootScope) {
+  ShoppingListFactory.$inject = ['$q', 'HealthyFoodService'];
+  function ShoppingListFactory($q, HealthyFoodService) {
     var factory = function(maxItems){
-      return new ShoppingListService(maxItems, $q, HealthyFoodService, $rootScope);
+      return new ShoppingListService(maxItems, $q, HealthyFoodService);
     };
 
     return factory;
