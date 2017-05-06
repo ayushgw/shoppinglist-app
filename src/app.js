@@ -1,15 +1,18 @@
 (function () {
   'use strict';
-  //to prevent mistakes like defining variables on global scope, eg. x=20 without using var
+  // to prevent mistakes like defining variables on global scope, eg. declaring 'x = 20' without using var
 
   angular.module("ShoppingListApp", ['Spinner'])
+  .filter('RangeFilter', RangeFilter)
   .controller("QuickAddController", QuickAddController)
+  .service("QuickAddService", QuickAddService)
   .controller("ShoppingListOneController", ShoppingListOneController)
   .controller("ShoppingListTwoController", ShoppingListTwoController)
   .factory("ShoppingListFactory", ShoppingListFactory)
   .service("HealthyFoodService", HealthyFoodService)
   .directive("shoppingList", ShoppingListDirective)
-  .controller("ShoppingListDirectiveController", ShoppingListDirectiveController);
+  .controller("ShoppingListDirectiveController", ShoppingListDirectiveController)
+  ;
 
   function ShoppingListDirective() {
     var ddo = {
@@ -31,14 +34,32 @@
 
   }
 
-  QuickAddController.$inject = ['$rootScope'];
-  function QuickAddController($rootScope) {
+  function RangeFilter() {
+    return function(input, total) {
+      total = parseInt(total);
+
+      for (var i=0; i<total; i++) {
+        input.push(i);
+      }
+
+      return input;
+    };
+  }
+
+  QuickAddController.$inject = ['QuickAddService', '$rootScope', '$timeout'];
+  function QuickAddController(QuickAddService, $rootScope, $timeout) {
     var quickadd = this;
 
-    // TODO: USE SERVICE
-    quickadd.listitems = ['Chips', 'Cookies', 'Eggs', 'Bananas', 'Milk 500ml'];
+    // Switch Views
+    quickadd.switchView = function(view) {
+      quickadd.view = view;
+    };
+    quickadd.switchView('additemsview');
+
+    quickadd.items = QuickAddService.getItems();
 
     quickadd.addToListOne = function(item, qty) {
+      console.log(qty);
       $rootScope.$broadcast('quickadd_list1', {
         itemName: item,
         itemQuantity: qty
@@ -46,11 +67,80 @@
     };
 
     quickadd.addToListTwo = function(item, qty) {
+      console.log(qty);
       $rootScope.$broadcast('quickadd_list2', {
         itemName: item,
         itemQuantity: qty
       })
     };
+
+    var newItemErrorFunction = function() {
+      quickadd.newItemError = true;
+      $timeout(function () {
+        quickadd.newItemError = false;
+      }, 2000);
+    };
+
+    quickadd.newItem = '';
+    quickadd.addItem = function(itemName) {
+      if(quickadd.items.length < 5) {
+        QuickAddService.addItem(itemName);
+      }
+      else {
+        newItemErrorFunction();
+      }
+    };
+
+    quickadd.editItemFlags = {};
+    quickadd.editItem = function(index) {
+      var index = index;
+      quickadd.editItemFlags[index] = true;
+    };
+
+    quickadd.removeItem = function(index) {
+      QuickAddService.removeItem(index);
+    };
+
+    // quickadd.cancelEditItem = function(index) {
+    //   quickadd.editItemFlags[index] = false;
+    // };
+
+    quickadd.saveItem = function(index, newName) {
+      QuickAddService.saveItem(index, newName);
+      quickadd.editItemFlags[index] = false;
+    };
+
+    quickadd.saveAllItems = function() {
+      angular.forEach(quickadd.editItemFlags, function(value, key){
+        quickadd.editItemFlags[key] = false;
+      });
+    }
+  }
+
+  // QuickAddService.$inject = [''];
+  function QuickAddService() {
+    var service = this;
+
+    var items = [{name: 'Chips'}, {name: 'Cookies'}, {name: 'Eggs'}, {name: 'Bananas'}, {name: 'Milk 500ml'}];
+
+    service.getItems = function() {
+      return items;
+    };
+
+    service.saveItem = function(index, newName) {
+      items[index].name = newName;
+    };
+
+    service.removeItem = function(index) {
+      items.splice(index, 1);
+    };
+
+    service.addItem = function(itemName) {
+      var item = {
+        name: itemName
+      };
+      items.push(item);
+    }
   }
 
   ShoppingListOneController.$inject = ['ShoppingListFactory', '$rootScope'];
@@ -65,7 +155,6 @@
     list1.item = { itemName: '', itemQuantity: null };
 
     list1.addItem = function(item) {
-      console.log(item);
       list1.showSpinner = true;
       shoppingList.addItem(item)
       .then(function(success){
@@ -158,6 +247,10 @@
         // Check for too many boxes
         if (quantity < 6) {
           deferred.resolve(result);
+        }
+        else if (!quantity) {
+          result.message = "Not a valid input!";
+          deferred.reject(result);
         }
         else {
           result.message = "That's too much, Ayush!";

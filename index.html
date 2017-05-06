@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <html ng-app="ShoppingListApp">
+
 <!-- ng-app binds this tag block to the app -->
 <head>
   <meta charset="utf-8">
@@ -45,37 +46,71 @@
         </ol>
       </div>
       <div class="col-md-5 quickadd" ng-controller="QuickAddController as quickadd">
-        <h4><u>Quick Add:</u></h4>
-
-        <div class="quickadd_main">
-          <ul>
-            <li ng-repeat="item in quickadd.listitems">
-              <div class="col-md-3">
-                {{item}}
+        <div class="quickadd_main" ng-if="quickadd.view == 'additemsview'">
+          <h4><u>Quick Add:</u></h4>
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="item in quickadd.items">
+              <div class="float_left">
+                {{item.name}}
               </div>
-              <select ng-model="qty">
-                <option value="" selected="">Select Qty</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="3">4</option>
-                <option value="3">5</option>
-              </select>
-              <button ng-click="quickadd.addToListOne(item, qty)">Add to List 1</button>
-              <button ng-click="quickadd.addToListTwo(item, qty)">Add to List 2</button>
+              <div class="text-right">
+                <select class="dropdown" ng-model="qty">
+                  <option value="" selected="" disabled="">Select Qty</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <button class="btn btn-default" ng-click="quickadd.addToListOne(item.name, qty)">Add to List 1</button>
+                <button class="btn btn-default" ng-click="quickadd.addToListTwo(item.name, qty)">Add to List 2</button>
+              </div>
             </li>
           </ul>
 
-          <a class="quickadd_update_link">Update Items List</a>
+          <button class="btn btn-default quickadd_buttons update_items_button float_right" ng-click="quickadd.switchView('updateitemsview')">Update Items List</button>
         </div>
 
-        <div class="quickadd_update" ng-hide="true">
+        <div class="quickadd_update" ng-if="quickadd.view == 'updateitemsview'">
+          <h4><u>Update Items:</u></h4>
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="index in [] | RangeFilter:quickadd.items.length">
+              <div class="float_left">
+                <span ng-hide="quickadd.editItemFlags[index] == true">
+                  {{quickadd.items[index].name}}
+                </span>
+                <input ng-show="quickadd.editItemFlags[index] == true" type="text" name="index" ng-model="quickadd.items[index].name">
+              </div>
+              <div class="text-right">
 
+                <button class="btn btn-default" ng-hide="quickadd.editItemFlags[index] == true" ng-click="quickadd.editItem($index)">Edit</button>
+                <button class="btn btn-default" ng-hide="quickadd.editItemFlags[index] == true" ng-click="quickadd.removeItem($index)">Remove</button>
+
+                <button class="btn btn-default" ng-show="quickadd.editItemFlags[index] == true" ng-click="quickadd.saveItem($index, quickadd.items[$index].name)">&#10003; Save</button>
+                <!-- <button class="btn btn-default" ng-show="quickadd.editItemFlags[index] == true" ng-click="quickadd.cancelEditItem($index)">&#10005; Cancel</button> -->
+
+              </div>
+            </li>
+          </ul>
+
+          <div class="clearfix" ng-init="addnewitem = false" ng-show="addnewitem == false">
+            <button class="btn btn-default quickadd_buttons done_button float_right" ng-click="quickadd.switchView('additemsview'); quickadd.saveAllItems()">Done</button>
+            <button class="btn btn-default quickadd_buttons float_right" ng-click="addnewitem = !addnewitem">Add Item</button>
+          </div>
+
+          <div class="quickadd_input" ng-show="addnewitem == true">
+            <input type="text" placeholder="Enter the name of the item" ng-model="quickadd.newItem">
+            <button class="btn btn-default" type="button" ng-click="quickadd.addItem(quickadd.newItem)">Add</button>
+            <button class="btn btn-default" type="button" ng-click="addnewitem = !addnewitem">Cancel</button>
+            <div class="error" ng-show="quickadd.newItemError">
+              ERR: Max items reached.
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" id="list_container">
 
       <!-- List 1 -->
       <div class="col-md-6" ng-controller="ShoppingListOneController as list1">
