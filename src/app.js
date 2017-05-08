@@ -101,10 +101,6 @@
       QuickAddService.removeItem(index);
     };
 
-    // quickadd.cancelEditItem = function(index) {
-    //   quickadd.editItemFlags[index] = false;
-    // };
-
     quickadd.saveItem = function(index, newName) {
       QuickAddService.saveItem(index, newName);
       quickadd.editItemFlags[index] = false;
@@ -117,7 +113,6 @@
     }
   }
 
-  // QuickAddService.$inject = [''];
   function QuickAddService() {
     var service = this;
 
@@ -220,12 +215,17 @@
       var deferred = $q.defer();
 
       var result = {
-        message: "1"
+        message: "default error message"
       };
 
       $timeout(function () {
+        // Check for empty string
+        if (!name) {
+          result.message = "Item name should not be left empty!";
+          deferred.reject(result);
+        }
         // Check for maggi
-        if (name.toLowerCase().indexOf('maggi') === -1) {
+        else if (name.toLowerCase().indexOf('maggi') === -1) {
           deferred.resolve(result)
         }
         else {
@@ -240,17 +240,17 @@
     service.checkQuantity = function (quantity) {
       var deferred = $q.defer();
       var result = {
-        message: "2"
+        message: "default error message"
       };
 
       $timeout(function () {
         // Check for too many boxes
-        if (quantity < 6) {
-          deferred.resolve(result);
-        }
-        else if (!quantity) {
-          result.message = "Not a valid input!";
+        if (!quantity) {
+          result.message = "Item quantity should not be left empty!";
           deferred.reject(result);
+        }
+        else if (quantity < 6) {
+          deferred.resolve(result);
         }
         else {
           result.message = "That's too much, Ayush!";
